@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "projectId": "sample-project",
+  "name": "Sample edit",
+  "durationUs": 4000000,
+  "tracks": [
+    {
+      "id": "video-1",
+      "kind": "video",
+      "clips": [
+        {
+          "id": "clip-1",
+          "asset": {
+            "path": "media/video-1.mp4",
+            "license": "Apache-2.0"
+          },
+          "startUs": 0,
+          "sourceInUs": 0,
+          "durationUs": 4000000,
+          "effects": [
+            {
+              "effectId": "org.samvid.orchit.color.adjust",
+              "parameters": {
+                "exposure": 0.1
+              },
+              "keyframes": [
+                {
+                  "timeUs": 0,
+                  "values": {
+                    "exposure": 0.1
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

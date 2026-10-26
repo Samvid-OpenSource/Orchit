@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "org.samvid.orchit.text.fade",
+  "name": "Fade in",
+  "timing": {
+    "durationUs": 500000,
+    "delayUs": 0
+  },
+  "keyframes": [
+    {
+      "property": "opacity",
+      "timeUs": 0,
+      "value": 0.0,
+      "easing": "linear"
+    },
+    {
+      "property": "opacity",
+      "timeUs": 500000,
+      "value": 1.0,
+      "easing": "linear"
+    }
+  ],
+  "assets": [
+    {
+      "path": "fonts/sample.ttf",
+      "kind": "font",
+      "license": "OFL-1.1"
+    }
+  ]
+}

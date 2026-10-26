@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://samvid.org/orchit/formats/transition.json.schema.json",
+  "title": "transition.json",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "id",
+    "name",
+    "category",
+    "shader",
+    "durationRangeUs",
+    "parameters",
+    "sound"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "shader": {
+      "type": "object",
+      "required": [
+        "path",
+        "license"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "durationRangeUs": {
+      "type": "object"
+    },
+    "parameters": {
+      "type": "array"
+    },
+    "sound": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

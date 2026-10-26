@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://samvid.org/orchit/formats/project.json.schema.json",
+  "title": "project.json",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "projectId",
+    "name",
+    "durationUs",
+    "tracks"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "durationUs": {
+      "type": "number"
+    },
+    "tracks": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

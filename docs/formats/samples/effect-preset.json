@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "id": "org.samvid.orchit.effect.exposure",
+  "name": "Soft exposure",
+  "effectId": "org.samvid.orchit.color.adjust",
+  "parameters": {
+    "exposure": 0.15,
+    "contrast": 1.05
+  },
+  "keyframes": [
+    {
+      "timeUs": 0,
+      "values": {
+        "exposure": 0.15
+      }
+    }
+  ]
+}

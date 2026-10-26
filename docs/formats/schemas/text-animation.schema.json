@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://samvid.org/orchit/formats/text-animation.json.schema.json",
+  "title": "text-animation.json",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "id",
+    "name",
+    "timing",
+    "keyframes",
+    "assets"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "timing": {
+      "type": "object"
+    },
+    "keyframes": {
+      "type": "array"
+    },
+    "assets": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

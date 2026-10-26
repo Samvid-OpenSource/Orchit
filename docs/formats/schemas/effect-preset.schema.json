@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://samvid.org/orchit/formats/effect-preset.json.schema.json",
+  "title": "effect-preset.json",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "id",
+    "name",
+    "effectId",
+    "parameters",
+    "keyframes"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "effectId": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "keyframes": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": false
+}

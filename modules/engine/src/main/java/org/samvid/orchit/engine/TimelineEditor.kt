@@ -25,7 +25,7 @@ class TimelineEditor(initialProject: Project) {
         edit { current ->
             current.updateClip(clipId) {
                 it.copy(duration = TimelineTimeUs(offset))
-            }.updateTrackContaining(newRightClipId) { track ->
+            }.updateTrackContaining(clipId) { track ->
                 val original = track.clips.first { it.id == clipId }
                 val newClip = original.copy(
                     id = newRightClipId,

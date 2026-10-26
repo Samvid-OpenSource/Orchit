@@ -74,8 +74,12 @@ class TimelineEditorTest {
         assertFalse(editor.canRedo())
         assertTrue(editor.undo())
         assertEquals(2, editor.project.tracks.single().clips.size)
+        assertTrue(editor.undo())
+        assertEquals(1, editor.project.tracks.single().clips.size)
+        assertEquals("c1", editor.project.tracks.single().clips.single().id)
         assertFalse(editor.undo())
         assertTrue(editor.redo())
+        assertEquals(2, editor.project.tracks.single().clips.size)
     }
 
     private fun editor(): TimelineEditor = TimelineEditor(

@@ -1,27 +1,12 @@
 package org.samvid.orchit.ui.fake
 
-/**
- * Lightweight project summary for the home screen list.
- * This is a UI-only type, independent of the engine's Project class.
- */
-data class ProjectSummary(
-    val id: String,
-    val name: String,
-)
+import org.samvid.orchit.ui.ProjectSummary
 
-/**
- * Provides in-memory sample projects for UI development.
- */
+/** Provides sample projects for the in-memory home screen contract. */
 object FakeProjectData {
-
-    private val projects = mutableListOf(
+    /** Initial project rows shown in the UI skeleton. */
+    fun all(): List<ProjectSummary> = listOf(
         ProjectSummary(id = "proj-001", name = "My First Reel"),
         ProjectSummary(id = "proj-002", name = "Summer Highlights"),
     )
-
-    fun all(): List<ProjectSummary> = projects.toList()
-
-    fun add(project: ProjectSummary) {
-        projects.add(project)
-    }
 }

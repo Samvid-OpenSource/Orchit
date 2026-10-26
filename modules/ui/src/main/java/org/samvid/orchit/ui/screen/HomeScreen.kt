@@ -3,6 +3,8 @@ package org.samvid.orchit.ui.screen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,26 +15,36 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.samvid.orchit.ui.fake.FakeProjectData
-import org.samvid.orchit.ui.fake.ProjectSummary
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.samvid.orchit.ui.ProjectListContract
+import org.samvid.orchit.ui.ProjectSummary
+import org.samvid.orchit.ui.fake.FakeProjectListContract
 import org.samvid.orchit.ui.theme.OrchitTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,10 +52,12 @@ import org.samvid.orchit.ui.theme.OrchitTheme
 fun HomeScreen(
     onProjectClick: (String) -> Unit,
     onNewProject: () -> Unit,
+    projectListContract: ProjectListContract? = null,
 ) {
-    val projects = remember {
-        mutableStateListOf<ProjectSummary>().apply { addAll(FakeProjectData.all()) }
-    }
+    val contract = remember(projectListContract) { projectListContract ?: FakeProjectListContract() }
+    val state by contract.state.collectAsStateWithLifecycle()
+    var projectToRename by remember { mutableStateOf<ProjectSummary?>(null) }
+    var renameValue by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -58,39 +72,66 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val newProject = ProjectSummary(
-                        id = "proj-${System.nanoTime()}",
-                        name = "Untitled Project",
-                    )
-                    projects.add(newProject)
-                    FakeProjectData.add(newProject)
+                    val project = contract.createProject("Untitled Project")
+                    contract.openProject(project.id)
                     onNewProject()
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "New project",
-                )
+                Icon(imageVector = Icons.Default.Add, contentDescription = "New project")
             }
         },
     ) { paddingValues ->
-        if (projects.isEmpty()) {
+        if (state.projects.isEmpty()) {
             EmptyState(modifier = Modifier.padding(paddingValues).fillMaxSize())
         } else {
             LazyColumn(
                 modifier = Modifier.padding(paddingValues).fillMaxSize(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(projects, key = { it.id }) { project ->
+                items(state.projects, key = { it.id }) { project ->
                     ProjectCard(
                         project = project,
-                        onClick = { onProjectClick(project.id) },
+                        onClick = {
+                            if (contract.openProject(project.id)) onProjectClick(project.id)
+                        },
+                        onRename = {
+                            projectToRename = project
+                            renameValue = project.name
+                        },
+                        onDelete = { contract.deleteProject(project.id) },
                     )
                 }
             }
         }
+    }
+
+    projectToRename?.let { project ->
+        AlertDialog(
+            onDismissRequest = { projectToRename = null },
+            title = { Text("Rename project") },
+            text = {
+                OutlinedTextField(
+                    value = renameValue,
+                    onValueChange = { renameValue = it },
+                    singleLine = true,
+                    label = { Text("Project name") },
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        contract.renameProject(project.id, renameValue.trim())
+                        projectToRename = null
+                    },
+                    enabled = renameValue.isNotBlank(),
+                ) { Text("Save") }
+            },
+            dismissButton = {
+                TextButton(onClick = { projectToRename = null }) { Text("Cancel") }
+            },
+        )
     }
 }
 
@@ -98,21 +139,29 @@ fun HomeScreen(
 private fun ProjectCard(
     project: ProjectSummary,
     onClick: () -> Unit,
+    onRename: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
-        Text(
-            text = project.name,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(16.dp),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(start = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = project.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f).padding(vertical = 16.dp),
+            )
+            IconButton(onClick = onRename) {
+                Icon(Icons.Default.Edit, contentDescription = "Rename ${project.name}")
+            }
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete ${project.name}")
+            }
+        }
     }
 }
 

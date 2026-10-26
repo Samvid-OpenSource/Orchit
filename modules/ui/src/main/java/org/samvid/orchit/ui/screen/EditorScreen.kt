@@ -14,10 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.samvid.orchit.ui.EditorAction
+import org.samvid.orchit.ui.EditorUiContract
 import org.samvid.orchit.ui.component.EditorToolbar
 import org.samvid.orchit.ui.component.FakeTrack
 import org.samvid.orchit.ui.component.PreviewArea
@@ -27,13 +30,27 @@ import org.samvid.orchit.ui.fake.FakeTimelineData
 import org.samvid.orchit.ui.navigation.OrchitWindowSize
 import org.samvid.orchit.ui.theme.OrchitTheme
 
+private const val TimelineDurationUs = 10_000_000L
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorScreen(windowSize: OrchitWindowSize) {
-    val contract = remember { FakeEditorUiContract() }
-    val state = contract.currentState()
+fun EditorScreen(
+    windowSize: OrchitWindowSize,
+    editorContract: EditorUiContract? = null,
+) {
+    val contract = remember(editorContract) { editorContract ?: FakeEditorUiContract() }
+    val state by contract.state.collectAsStateWithLifecycle()
     val tracks = remember { FakeTimelineData.sampleTracks() }
-    val playheadFraction = (state.playheadUs.toFloat() / 10_000_000f).coerceIn(0f, 1f)
+    val playheadFraction = (state.playheadUs.toFloat() / TimelineDurationUs).coerceIn(0f, 1f)
+    val onScrubStarted: (Float) -> Unit = { fraction ->
+        contract.dispatch(EditorAction.ScrubStarted(positionFor(fraction)))
+    }
+    val onScrubTo: (Float) -> Unit = { fraction ->
+        contract.dispatch(EditorAction.ScrubTo(positionFor(fraction)))
+    }
+    val onScrubEnded: (Float) -> Unit = { fraction ->
+        contract.dispatch(EditorAction.ScrubEnded(positionFor(fraction)))
+    }
 
     Scaffold(
         topBar = {
@@ -57,28 +74,46 @@ fun EditorScreen(windowSize: OrchitWindowSize) {
                     isPlaying = state.isPlaying,
                     tracks = tracks,
                     playheadFraction = playheadFraction,
-                    onPlayPause = {
-                        if (state.isPlaying) contract.dispatch(EditorAction.Pause)
-                        else contract.dispatch(EditorAction.Play)
-                    },
+                    selectedClipId = state.selectedClipId,
+                    selectedTrackId = state.selectedTrackId,
+                    onPlayPause = { contract.dispatch(state.playPauseAction()) },
+                    onScrubStarted = onScrubStarted,
+                    onScrubTo = onScrubTo,
+                    onScrubEnded = onScrubEnded,
+                    onSelectClip = { contract.dispatch(EditorAction.SelectClip(it)) },
+                    onDeselectClip = { contract.dispatch(EditorAction.DeselectClip) },
+                    onSelectTrack = { contract.dispatch(EditorAction.SelectTrack(it)) },
+                    onDeselectTrack = { contract.dispatch(EditorAction.DeselectTrack) },
                 )
                 OrchitWindowSize.Medium -> MediumEditorLayout(
                     isPlaying = state.isPlaying,
                     tracks = tracks,
                     playheadFraction = playheadFraction,
-                    onPlayPause = {
-                        if (state.isPlaying) contract.dispatch(EditorAction.Pause)
-                        else contract.dispatch(EditorAction.Play)
-                    },
+                    selectedClipId = state.selectedClipId,
+                    selectedTrackId = state.selectedTrackId,
+                    onPlayPause = { contract.dispatch(state.playPauseAction()) },
+                    onScrubStarted = onScrubStarted,
+                    onScrubTo = onScrubTo,
+                    onScrubEnded = onScrubEnded,
+                    onSelectClip = { contract.dispatch(EditorAction.SelectClip(it)) },
+                    onDeselectClip = { contract.dispatch(EditorAction.DeselectClip) },
+                    onSelectTrack = { contract.dispatch(EditorAction.SelectTrack(it)) },
+                    onDeselectTrack = { contract.dispatch(EditorAction.DeselectTrack) },
                 )
                 OrchitWindowSize.Expanded -> ExpandedEditorLayout(
                     isPlaying = state.isPlaying,
                     tracks = tracks,
                     playheadFraction = playheadFraction,
-                    onPlayPause = {
-                        if (state.isPlaying) contract.dispatch(EditorAction.Pause)
-                        else contract.dispatch(EditorAction.Play)
-                    },
+                    selectedClipId = state.selectedClipId,
+                    selectedTrackId = state.selectedTrackId,
+                    onPlayPause = { contract.dispatch(state.playPauseAction()) },
+                    onScrubStarted = onScrubStarted,
+                    onScrubTo = onScrubTo,
+                    onScrubEnded = onScrubEnded,
+                    onSelectClip = { contract.dispatch(EditorAction.SelectClip(it)) },
+                    onDeselectClip = { contract.dispatch(EditorAction.DeselectClip) },
+                    onSelectTrack = { contract.dispatch(EditorAction.SelectTrack(it)) },
+                    onDeselectTrack = { contract.dispatch(EditorAction.DeselectTrack) },
                 )
             }
         }
@@ -90,7 +125,16 @@ private fun CompactEditorLayout(
     isPlaying: Boolean,
     tracks: List<FakeTrack>,
     playheadFraction: Float,
+    selectedClipId: String?,
+    selectedTrackId: String?,
     onPlayPause: () -> Unit,
+    onScrubStarted: (Float) -> Unit,
+    onScrubTo: (Float) -> Unit,
+    onScrubEnded: (Float) -> Unit,
+    onSelectClip: (String) -> Unit,
+    onDeselectClip: () -> Unit,
+    onSelectTrack: (String) -> Unit,
+    onDeselectTrack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         PreviewArea(
@@ -101,6 +145,15 @@ private fun CompactEditorLayout(
         TimelineArea(
             tracks = tracks,
             playheadFraction = playheadFraction,
+            selectedClipId = selectedClipId,
+            selectedTrackId = selectedTrackId,
+            onScrubStarted = onScrubStarted,
+            onScrubTo = onScrubTo,
+            onScrubEnded = onScrubEnded,
+            onSelectClip = onSelectClip,
+            onDeselectClip = onDeselectClip,
+            onSelectTrack = onSelectTrack,
+            onDeselectTrack = onDeselectTrack,
             modifier = Modifier.fillMaxWidth().weight(0.4f),
         )
         EditorToolbar(modifier = Modifier.fillMaxWidth())
@@ -112,7 +165,16 @@ private fun MediumEditorLayout(
     isPlaying: Boolean,
     tracks: List<FakeTrack>,
     playheadFraction: Float,
+    selectedClipId: String?,
+    selectedTrackId: String?,
     onPlayPause: () -> Unit,
+    onScrubStarted: (Float) -> Unit,
+    onScrubTo: (Float) -> Unit,
+    onScrubEnded: (Float) -> Unit,
+    onSelectClip: (String) -> Unit,
+    onDeselectClip: () -> Unit,
+    onSelectTrack: (String) -> Unit,
+    onDeselectTrack: () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxWidth().weight(1f)) {
@@ -124,6 +186,15 @@ private fun MediumEditorLayout(
             TimelineArea(
                 tracks = tracks,
                 playheadFraction = playheadFraction,
+                selectedClipId = selectedClipId,
+                selectedTrackId = selectedTrackId,
+                onScrubStarted = onScrubStarted,
+                onScrubTo = onScrubTo,
+                onScrubEnded = onScrubEnded,
+                onSelectClip = onSelectClip,
+                onDeselectClip = onDeselectClip,
+                onSelectTrack = onSelectTrack,
+                onDeselectTrack = onDeselectTrack,
                 modifier = Modifier.weight(0.5f).fillMaxHeight(),
             )
         }
@@ -136,7 +207,16 @@ private fun ExpandedEditorLayout(
     isPlaying: Boolean,
     tracks: List<FakeTrack>,
     playheadFraction: Float,
+    selectedClipId: String?,
+    selectedTrackId: String?,
     onPlayPause: () -> Unit,
+    onScrubStarted: (Float) -> Unit,
+    onScrubTo: (Float) -> Unit,
+    onScrubEnded: (Float) -> Unit,
+    onSelectClip: (String) -> Unit,
+    onDeselectClip: () -> Unit,
+    onSelectTrack: (String) -> Unit,
+    onDeselectTrack: () -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         PreviewArea(
@@ -148,12 +228,27 @@ private fun ExpandedEditorLayout(
             TimelineArea(
                 tracks = tracks,
                 playheadFraction = playheadFraction,
+                selectedClipId = selectedClipId,
+                selectedTrackId = selectedTrackId,
+                onScrubStarted = onScrubStarted,
+                onScrubTo = onScrubTo,
+                onScrubEnded = onScrubEnded,
+                onSelectClip = onSelectClip,
+                onDeselectClip = onDeselectClip,
+                onSelectTrack = onSelectTrack,
+                onDeselectTrack = onDeselectTrack,
                 modifier = Modifier.fillMaxWidth().weight(1f),
             )
             EditorToolbar(modifier = Modifier.fillMaxWidth())
         }
     }
 }
+
+private fun positionFor(fraction: Float): Long =
+    (fraction.coerceIn(0f, 1f) * TimelineDurationUs).toLong()
+
+private fun org.samvid.orchit.ui.EditorUiState.playPauseAction(): EditorAction =
+    if (isPlaying) EditorAction.Pause else EditorAction.Play
 
 @Preview(showBackground = true, name = "Editor – Compact Dark")
 @Composable

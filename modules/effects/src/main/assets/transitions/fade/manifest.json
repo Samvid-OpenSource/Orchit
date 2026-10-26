@@ -1,0 +1,23 @@
+{
+  "formatVersion": 1,
+  "id": "org.samvid.orchit.transition.fade",
+  "name": "Fade",
+  "category": "blend",
+  "shader": {
+    "path": "transition.frag",
+    "license": "Apache-2.0"
+  },
+  "durationRangeUs": {
+    "min": 100000,
+    "max": 2000000
+  },
+  "parameters": [
+    {
+      "id": "progress",
+      "type": "float",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 1.0
+    }
+  ]
+}

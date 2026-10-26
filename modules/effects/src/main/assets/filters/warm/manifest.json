@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "id": "org.samvid.orchit.filter.warm",
+  "name": "Warm",
+  "lut": {
+    "path": "warm.cube",
+    "license": "Apache-2.0"
+  },
+  "parameters": [
+    {
+      "id": "intensity",
+      "type": "float",
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0
+    }
+  ]
+}

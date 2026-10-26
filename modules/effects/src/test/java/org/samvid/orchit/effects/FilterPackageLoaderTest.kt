@@ -9,18 +9,18 @@ class FilterPackageLoaderTest {
 
     @Test
     fun sampleLoadsAndValidates() {
-        val package = FilterPackageLoader.load(sample)
+        val filter = FilterPackageLoader.load(sample)
 
-        assertEquals(1, package.formatVersion)
-        assertEquals("org.samvid.orchit.filter.warm", package.id)
-        assertEquals("Warm", package.name)
-        assertEquals("warm.cube", package.lut.path)
-        assertEquals("CC0-1.0", package.lut.license)
-        assertNull(package.category)
-        assertNull(package.license)
-        assertEquals(1, package.parameters.size)
-        assertEquals("intensity", package.parameters[0].id)
-        assertEquals(EffectValue.Decimal(1.0), package.parameters[0].defaultValue)
+        assertEquals(1, filter.formatVersion)
+        assertEquals("org.samvid.orchit.filter.warm", filter.id)
+        assertEquals("Warm", filter.name)
+        assertEquals("warm.cube", filter.lut.path)
+        assertEquals("CC0-1.0", filter.lut.license)
+        assertNull(filter.category)
+        assertNull(filter.license)
+        assertEquals(1, filter.parameters.size)
+        assertEquals("intensity", filter.parameters[0].id)
+        assertEquals(EffectValue.Decimal(1.0), filter.parameters[0].defaultValue)
     }
 
     @Test
@@ -30,9 +30,9 @@ class FilterPackageLoaderTest {
             "\"name\": \"Warm\",\n  \"license\": \"CC0-1.0\",",
         )
 
-        val package = FilterPackageLoader.load(withPackageLicense)
+        val filter = FilterPackageLoader.load(withPackageLicense)
 
-        assertEquals("CC0-1.0", package.license)
+        assertEquals("CC0-1.0", filter.license)
     }
 
     @Test

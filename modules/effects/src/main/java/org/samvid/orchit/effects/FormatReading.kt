@@ -112,7 +112,7 @@ private fun JsonValue.NumberValue.toEffectNumber(context: String): EffectValue {
         if (normalized.scale() <= 0) {
             try {
                 return EffectValue.Integer(normalized.longValueExact())
-            } catch (_: ArithmeticException) {
+            } catch (exception: ArithmeticException) {
                 // Values beyond the long range remain usable as decimal values.
             }
         }

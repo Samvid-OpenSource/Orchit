@@ -9,34 +9,34 @@ class TransitionPackageLoaderTest {
 
     @Test
     fun sampleLoadsAndValidates() {
-        val package = TransitionPackageLoader.load(sample)
+        val transition = TransitionPackageLoader.load(sample)
 
-        assertEquals(1, package.formatVersion)
-        assertEquals("org.samvid.orchit.transition.dissolve", package.id)
-        assertEquals("Dissolve", package.name)
-        assertEquals("blend", package.category)
-        assertEquals("transition.frag", package.shader.path)
-        assertEquals("Apache-2.0", package.shader.license)
-        assertEquals(100_000L, package.duration.minUs)
-        assertEquals(2_000_000L, package.duration.maxUs)
-        assertEquals(1, package.parameters.size)
-        assertEquals("progress", package.parameters[0].id)
-        assertEquals("float", package.parameters[0].type)
-        assertEquals(EffectValue.Decimal(0.0), package.parameters[0].defaultValue)
-        assertEquals(0.0, package.parameters[0].minValue ?: Double.NaN, 0.0)
-        assertEquals(1.0, package.parameters[0].maxValue ?: Double.NaN, 0.0)
-        assertEquals("assets/whoosh.wav", package.sound?.path)
-        assertEquals("CC0-1.0", package.sound?.license)
+        assertEquals(1, transition.formatVersion)
+        assertEquals("org.samvid.orchit.transition.dissolve", transition.id)
+        assertEquals("Dissolve", transition.name)
+        assertEquals("blend", transition.category)
+        assertEquals("transition.frag", transition.shader.path)
+        assertEquals("Apache-2.0", transition.shader.license)
+        assertEquals(100_000L, transition.duration.minUs)
+        assertEquals(2_000_000L, transition.duration.maxUs)
+        assertEquals(1, transition.parameters.size)
+        assertEquals("progress", transition.parameters[0].id)
+        assertEquals("float", transition.parameters[0].type)
+        assertEquals(EffectValue.Decimal(0.0), transition.parameters[0].defaultValue)
+        assertEquals(0.0, transition.parameters[0].minValue ?: Double.NaN, 0.0)
+        assertEquals(1.0, transition.parameters[0].maxValue ?: Double.NaN, 0.0)
+        assertEquals("assets/whoosh.wav", transition.sound?.path)
+        assertEquals("CC0-1.0", transition.sound?.license)
     }
 
     @Test
     fun optionalSoundMayBeOmitted() {
         val withoutSound = sample.substringBefore(",\n  \"sound\"") + "\n}"
 
-        val package = TransitionPackageLoader.load(withoutSound)
+        val transition = TransitionPackageLoader.load(withoutSound)
 
-        assertNull(package.sound)
-        assertEquals("Dissolve", package.name)
+        assertNull(transition.sound)
+        assertEquals("Dissolve", transition.name)
     }
 
     @Test

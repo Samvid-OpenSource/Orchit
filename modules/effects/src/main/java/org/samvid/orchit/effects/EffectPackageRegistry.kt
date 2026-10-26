@@ -6,7 +6,7 @@ package org.samvid.orchit.effects
  * The registry is an in-memory catalog. It performs no file or network access; callers supply
  * manifest and LUT text that was already read from local package storage.
  */
-class EffectPackageRegistry {
+class EffectPackageRegistry : EffectCatalog {
     private val packagesById = LinkedHashMap<String, EffectPackage>()
 
     /** Number of registered packages. */
@@ -14,6 +14,22 @@ class EffectPackageRegistry {
 
     /** Registered packages in insertion order. */
     fun packages(): List<EffectPackage> = packagesById.values.toList()
+
+    /** IDs of all registered effect packages. */
+    override fun effectIds(): List<String> = packagesById.keys.toList()
+
+    /** Public metadata for all registered package types. */
+    override fun packageMetadata(): List<EffectPackageMetadata> = packagesById.values.map(::metadata)
+
+    /** Public metadata for a package id, or null when it is not registered. */
+    override fun findPackageMetadata(id: String): EffectPackageMetadata? =
+        packagesById[id]?.let(::metadata)
+
+    /** Checks package identity, version, and declared primary asset license. */
+    override fun validate(effect: AppliedEffect): Boolean {
+        val metadata = findPackageMetadata(effect.packageId) ?: return false
+        return metadata.packageVersion == effect.packageVersion && metadata.license == effect.license
+    }
 
     /** Registers a validated package, rejecting duplicate ids. */
     fun register(effectPackage: EffectPackage): EffectPackage {
@@ -77,4 +93,34 @@ class EffectPackageRegistry {
 
     /** Registered effect presets in insertion order. */
     fun presets(): List<EffectPreset> = packagesById.values.filterIsInstance<EffectPreset>()
+
+    private fun metadata(effectPackage: EffectPackage): EffectPackageMetadata = when (effectPackage) {
+        is TransitionPackage -> EffectPackageMetadata(
+            id = effectPackage.id,
+            packageVersion = effectPackage.formatVersion,
+            name = effectPackage.name,
+            category = effectPackage.category,
+            parameterDefinitions = effectPackage.parameters,
+            license = effectPackage.shader.license,
+            assets = listOfNotNull(effectPackage.shader, effectPackage.sound),
+        )
+        is FilterPackage -> EffectPackageMetadata(
+            id = effectPackage.id,
+            packageVersion = effectPackage.formatVersion,
+            name = effectPackage.name,
+            category = effectPackage.category,
+            parameterDefinitions = effectPackage.parameters,
+            license = effectPackage.license ?: effectPackage.lut.license,
+            assets = listOf(effectPackage.lut),
+        )
+        is EffectPreset -> EffectPackageMetadata(
+            id = effectPackage.id,
+            packageVersion = effectPackage.formatVersion,
+            name = effectPackage.name,
+            category = effectPackage.category,
+            parameterDefinitions = emptyList(),
+            license = null,
+            assets = emptyList(),
+        )
+    }
 }

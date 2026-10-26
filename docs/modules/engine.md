@@ -6,7 +6,7 @@ Project documents, timelines, clips, tracks, playback, and export orchestration.
 
 ## Exposes
 
-Kotlin contracts in `org.samvid.orchit.engine`. Project, Track, Clip, PlaybackController, ProjectExporter, and ProjectRepository contracts. `ProjectDocument` and `ProjectJson` implement strict version 1 local project JSON parsing and writing. `TimelineEditor` provides immutable clip and track edits with snapshot undo/redo.
+Kotlin contracts in `org.samvid.orchit.engine`. `ProjectDocumentContract` is implemented by the schema-matching `ProjectDocument` JSON model, including project duration, local asset paths and licenses, effects, and keyframes. `Project.duration` reports the timeline end. `TimelineEditor` implements `TimelineOperations` and `UndoRedo` for clip and track editing with snapshot undo/redo.
 
 ## Must not touch
 

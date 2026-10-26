@@ -1,6 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://samvid.org/orchit/formats/project.json.schema.json",
   "title": "project.json",
   "type": "object",
   "required": [
@@ -21,11 +20,120 @@
       "type": "string"
     },
     "durationUs": {
-      "type": "number"
+      "type": "integer",
+      "minimum": 0
     },
     "tracks": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "clips"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "video",
+              "audio",
+              "text"
+            ]
+          },
+          "clips": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "asset",
+                "startUs",
+                "sourceInUs",
+                "durationUs"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "asset": {
+                  "type": "object",
+                  "required": [
+                    "path",
+                    "license"
+                  ],
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "license": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "startUs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sourceInUs": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "durationUs": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "effects": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "effectId",
+                      "parameters"
+                    ],
+                    "properties": {
+                      "effectId": {
+                        "type": "string"
+                      },
+                      "parameters": {
+                        "type": "object"
+                      },
+                      "keyframes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "timeUs",
+                            "values"
+                          ],
+                          "properties": {
+                            "timeUs": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "values": {
+                              "type": "object"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$id": "https://samvid.org/orchit/formats/project.json.schema.json"
 }

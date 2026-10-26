@@ -1,6 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://samvid.org/orchit/formats/transition.json.schema.json",
   "title": "transition.json",
   "type": "object",
   "required": [
@@ -10,8 +9,7 @@
     "category",
     "shader",
     "durationRangeUs",
-    "parameters",
-    "sound"
+    "parameters"
   ],
   "properties": {
     "formatVersion": {
@@ -43,14 +41,67 @@
       "additionalProperties": false
     },
     "durationRangeUs": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
     },
     "parameters": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "default"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "default": {},
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "sound": {
-      "type": "object"
+      "type": "object",
+      "required": [
+        "path",
+        "license"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$id": "https://samvid.org/orchit/formats/transition.json.schema.json"
 }

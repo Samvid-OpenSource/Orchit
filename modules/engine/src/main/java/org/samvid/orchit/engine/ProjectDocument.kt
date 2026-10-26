@@ -6,12 +6,12 @@ import com.google.gson.JsonParser
 
 /** Version 1 of the portable local project document format. */
 data class ProjectDocument(
-    val formatVersion: Int,
-    val projectId: String,
-    val name: String,
-    val durationUs: Long,
-    val tracks: List<ProjectTrackDocument>,
-)
+    override val formatVersion: Int,
+    override val projectId: String,
+    override val name: String,
+    override val durationUs: Long,
+    override val tracks: List<ProjectTrackDocument>,
+) : ProjectDocumentContract
 
 /** A version 1 project track. */
 data class ProjectTrackDocument(

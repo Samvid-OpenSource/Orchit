@@ -1,6 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://samvid.org/orchit/formats/effect-preset.json.schema.json",
   "title": "effect-preset.json",
   "type": "object",
   "required": [
@@ -8,8 +7,7 @@
     "id",
     "name",
     "effectId",
-    "parameters",
-    "keyframes"
+    "parameters"
   ],
   "properties": {
     "formatVersion": {
@@ -28,8 +26,26 @@
       "type": "object"
     },
     "keyframes": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "timeUs",
+          "values"
+        ],
+        "properties": {
+          "timeUs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "values": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$id": "https://samvid.org/orchit/formats/effect-preset.json.schema.json"
 }

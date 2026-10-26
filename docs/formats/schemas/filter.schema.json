@@ -1,6 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://samvid.org/orchit/formats/filter.json.schema.json",
   "title": "filter.json",
   "type": "object",
   "required": [
@@ -8,7 +7,6 @@
     "id",
     "name",
     "lut",
-    "license",
     "parameters"
   ],
   "properties": {
@@ -37,12 +35,34 @@
       },
       "additionalProperties": false
     },
-    "license": {
-      "type": "string"
-    },
     "parameters": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "default"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "default": {},
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$id": "https://samvid.org/orchit/formats/filter.json.schema.json"
 }
